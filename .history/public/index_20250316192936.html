@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Budget</title>
+    
+    <!-- This is an SEO Change -->
+    <meta name="description" content="Personal Budget is a free app to manage your finances and expenses effectively. Stay on track with alerts, charts, and insights.">
+    <meta name="keywords" content="budget app, free finance app, manage expenses, personal finance tool, budget tracker">
+    
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="main.css">
+    
+    <!-- This is an SEO Change -->
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebPage",
+      "name": "Personal Budget",
+      "description": "A free personal budget app for managing expenses effectively.",
+      "url": "http://example.com",
+      "mainEntity": {
+        "@type": "WebApplication",
+        "name": "Personal Budget App",
+        "operatingSystem": "Any",
+        "applicationCategory": "FinanceApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    }
+    </script>
+</head>
+
+<body>
+
+    <!-- This is an A11y Change -->
+<a href="#main" class="skip">Skip to content</a>
+
+    <!-- This is an A11y Change -->
+    <nav role="navigation">
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about.html">About</a></li>
+            <li><a href="/login.html">Login</a></li>
+            <li><a href="https://google.com">Google</a></li>
+        </ul>
+    </nav>
+
+    <!-- This is a Semantic HTML Change -->
+<header class="hero">
+    <h1>Personal Budget</h1>
+    <h2>A personal-budget management app</h2>
+  </header>
+
+  <!-- This is an A11y Change -->
+    <button aria-label="Learn more about budget management" onclick="location.href='/about.html'">Learn More</button>
+
+    <main class="center" id="main">
+
+        <!-- This is a Semantic HTML Change -->
+    <section class="page-area">
+        <!-- Articles remain unchanged -->
+
+            <article>
+                 <!-- This is an SEO Change -->
+                <h3>Stay on track</h3>
+                <p>
+                    Do you know where you are spending your money? If you really stop to track it down,
+                    you would get surprised! Proper budget management depends on real data... and this
+                    app will help you with that!
+                </p>
+            </article>
+    
+            <article>
+                <h3>Alerts</h3>
+                <p>
+                    What if your clothing budget ended? You will get an alert. The goal is to never go over the budget.
+                </p>
+            </article>
+    
+            <article>
+                <h3>Results</h3>
+                <p>
+                    People who stick to a financial plan, budgeting every expense, get out of debt faster!
+                    Also, they to live happier lives... since they expend without guilt or fear... 
+                    because they know it is all good and accounted for.
+                </p>
+            </article>
+    
+            <article>
+                <h2>Chart</h2>
+                <p> The pie chart represents the distribution of your budget across different categories.
+                  <canvas id="myChart" width="400" height="400" role="img" aria-label="Budget distribution pie chart showing various categories"></canvas>
+                  <!-- This is an A11y Change -->
+                  <div class="chart-description" aria-hidden="true">
+                    The pie chart represents the distribution of your budget across different categories.
+                  </div>
+                  <svg width="400" height="400" id="d3Chart"></svg> 
+                </p>
+              </article>
+              
+
+        </section>
+
+    </main>
+
+    <footer class="bottom">
+        <!-- This is a Semantic HTML Change -->
+        <div class="center">
+          All rights reserved &copy; Rahul Reddy
+        </div>
+      </footer>
+      
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <script>        
+        var dataSource = {
+                datasets: [
+                    {
+                        data: [],
+                        backgroundColor: []
+                    }
+                ],
+                labels: []
+            };
+
+            function createChart() {
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: dataSource
+    });
+}
+
+// D3.js Chart Initialization
+var svg = d3.select("#d3Chart"); // Ensure this ID matches your <svg> element
+const width = 300, height = 300, radius = Math.min(width, height) / 2;
+
+var pie = d3.pie().sort(null).value(function(d) { return d.value; });
+var arc = d3.arc().outerRadius(radius * 0.8).innerRadius(radius * 0.4);
+var color = d3.scaleOrdinal(d3.schemeCategory10); // Use default color scheme
+
+function updateD3Chart(data) {
+    // Clear the previous chart
+    svg.selectAll("*").remove();
+
+    // Define the color scale using the labels and colors
+    const color = d3.scaleOrdinal()
+        .domain(data.map(d => d.title))  // Assuming 'title' is your category
+        .range(data.map(d => d.color));  // Using 'color' property for slices
+
+    // Prepare the pie chart data
+    const pieData = pie(data);
+
+    // Create the slices (pie segments)
+    const slice = svg.selectAll("path")
+        .data(pieData)
+        .enter()
+        .append("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data.title))  // Fill based on the title of the data
+        .attr("class", "slice");
+
+    // Add labels to the slices
+    const text = svg.selectAll("text")
+        .data(pieData)
+        .enter()
+        .append("text")
+        .text(d => d.data.title)  // Label from the 'title' property of the data
+        .attr("transform", d => `translate(${arc.centroid(d)})`)  // Position the text at the centroid of each arc
+        .style("text-anchor", d => (midAngle(d) < Math.PI ? "start" : "end"))  // Adjust the text anchor
+        .style("font-size", "12px");  // Font size for the labels
+
+    // Function to calculate the middle angle of the arc for correct text alignment
+    function midAngle(d) {
+        return d.startAngle + (d.endAngle - d.startAngle) / 2;
+    }
+}
+
+
+
+            function getBudget() {
+    axios.get("/api/budget") // Ensure correct API URL
+        .then(function(res) {
+            console.log("MongoDB Data:", res.data);
+
+            if (!res.data.myBudget || res.data.myBudget.length === 0) {
+                console.error("No budget data received");
+                return;
+            }
+
+            // Update Chart.js data
+            dataSource.datasets[0].data = res.data.myBudget.map(d => d.value);
+            dataSource.labels = res.data.myBudget.map(d => d.title);
+            dataSource.datasets[0].backgroundColor = res.data.myBudget.map(d => d.color);
+
+            createChart(); // Chart.js update
+
+            const d3Data=res.data.myBudget.map(d => ({label: d.title, value: d.value, color: d.color}));
+            updateD3Chart(d3Data);
+        })
+        .catch(function(error) {
+            console.error("Error fetching budget data:", error);
+        });
+}
+
+// Call getBudget() when the page loads
+window.onload = function() {
+    getBudget();
+};
+
+
+
+    </script>
+      
+</body>
+</html>

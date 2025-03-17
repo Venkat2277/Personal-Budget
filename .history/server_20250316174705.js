@@ -25,7 +25,7 @@ app.get('/ping', (req, res) => {
 
 app.get("/api/budget", async (req, res) => {
   try {
-      const budgetData = await budgetModel.find();
+      const budgetData = await BudgetModel.find();
       res.json({ myBudget: budgetData });
   } catch (err) {
       res.status(500).json({ error: "Failed to fetch data" });
@@ -41,7 +41,7 @@ app.post("/api/budget", async (req, res) => {
           return res.status(400).json({ error: "All fields are required" });
       }
 
-      const newBudget = new budgetModel({ title, value, color });
+      const newBudget = new BudgetModel({ title, value, color });
       await newBudget.save();
 
       res.status(201).json({ message: "Budget item added", budget: newBudget });
@@ -55,11 +55,10 @@ app.post("/api/budget", async (req, res) => {
 
   app.get('/api/budget/', async (req, res) => {
   try {
-    const budgetData = await budgetModel.find();
-    res.json( {myBudget: budgetData});
+    const budgetdata = await budgetmodel.find();
+    res.json( {myBudget: budgetdata});
   } catch (err) {
-    app.console.log(err);
-    res.status(500).json({error: "Failed to fetch data"});
+    res.status(500).json({error: "Falied to fetch data"});
   }
 })
 

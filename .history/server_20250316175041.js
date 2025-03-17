@@ -58,7 +58,6 @@ app.post("/api/budget", async (req, res) => {
     const budgetData = await budgetModel.find();
     res.json( {myBudget: budgetData});
   } catch (err) {
-    app.console.log(err);
     res.status(500).json({error: "Failed to fetch data"});
   }
 })

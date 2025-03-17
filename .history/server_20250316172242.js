@@ -6,11 +6,10 @@ const mongoose = require('mongoose');
 
 const app = express();
 const PORT = 3000;
-const budgetModel = require("./Model/budgetModel");
+const budgetmodel = require('./Model/budgetModel');
 
 app.use(cors());
-app.use(express.json());
-app.use('/', express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect('mongodb://localhost:27017/personal_budget', {
   useNewUrlParser: true, 
@@ -23,43 +22,37 @@ app.get('/ping', (req, res) => {
   res.send('Pong! Server is alive.');
 });
 
-app.get("/api/budget", async (req, res) => {
-  try {
-      const budgetData = await budgetModel.find();
-      res.json({ myBudget: budgetData });
-  } catch (err) {
-      res.status(500).json({ error: "Failed to fetch data" });
-  }
+// Root route serving index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Static budget data
 
-app.post("/api/budget", async (req, res) => {
+app.post('/api/budget/', async (req, res) => {
   try {
-      const { title, value, color } = req.body;
-      if (!title || !value || !color) {
-          return res.status(400).json({ error: "All fields are required" });
-      }
+    const { title, value, color} = req.body;
+    if (!title || !value || !color) {
+      return res.status(400).json({error: "Please provide title, value and color"});
+    }
+    const newBudget = new budgetmodel({title, value, color});
+    await newBudget.save();
 
-      const newBudget = new budgetModel({ title, value, color });
-      await newBudget.save();
-
-      res.status(201).json({ message: "Budget item added", budget: newBudget });
+    res.status(201).json({message: "Budget created successfully", budget: newBudget});
   } catch (err) {
-      res.status(500).json({ error: "Failed to add budget item" });
+    res.status(500).json({error: "Failed to create budget"});
+  
   }
 });
-
 
 
 
   app.get('/api/budget/', async (req, res) => {
   try {
-    const budgetData = await budgetModel.find();
-    res.json( {myBudget: budgetData});
+    const budgetdata = await budgetmodel.find();
+    res.json( {myBudget: budgetdata});
   } catch (err) {
-    app.console.log(err);
-    res.status(500).json({error: "Failed to fetch data"});
+    res.status(500).json({error: "Falied to fetch data"});
   }
 })
 
